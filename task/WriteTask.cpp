@@ -121,15 +121,22 @@
 // Created by knighthat on 11/8/23.
 //
 
+#include <cctype>
+
 #include "WriteTask.h"
 
-void WriteTask::execute() {
 
-    std::string toWrite = values[0].value;
-    std::string command = "ydotool type \"%s\"";
+bool WriteTask::validate(string &source) {
+    if (source.empty())
+        cout << "Empty string to write!" << endl;
+    return !source.empty();
+}
 
-    size_t stringPos = command.find("%s");
-    command.replace(stringPos, 2, toWrite);
+WriteTask::WriteTask(string &source) : Task() {
+    Token token = *(new Token(TokenType::STRING, source));
+    tokens.push_back(token);
+}
 
-    system(command.c_str());
+string WriteTask::args() {
+    return "\"" + tokens[0].value + "\"";
 }

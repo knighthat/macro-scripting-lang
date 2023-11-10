@@ -121,22 +121,34 @@
 // Created by knighthat on 11/7/23.
 //
 
+
 #ifndef MACROSCRIPTINGLANG_TASK_H
 #define MACROSCRIPTINGLANG_TASK_H
 
-#include <string>
-#include <cstdlib>
+
+#include <iostream>
 
 #include "../token/Token.h"
+#include "../Validator.h"
+#include "../Utils.h"
+
+using namespace std;
+
 
 class Task {
 
 public:
-    Token *values;
+    vector<Token> tokens;
 
-    explicit Task(Token *values) { this->values = values; }
+    explicit Task() = default;
 
-    virtual void execute() = 0;
+    explicit Task(vector<Token> tokens) { this->tokens = std::move(tokens); }
+
+    virtual void execute();
+
+    virtual string command() { return ""; }
+
+    virtual string args() { return ""; }
 };
 
 

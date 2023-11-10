@@ -126,12 +126,17 @@
 
 #include "Task.h"
 
+
 class PressTask : public Task {
 
 public:
-    explicit PressTask(Token *values) : Task(values) {}
+    explicit PressTask(string &source);
 
-    void execute() override;
+    static bool validate(string &source);
+
+    string command() override { return "key"; }
+
+    string args() override;
 };
 
 

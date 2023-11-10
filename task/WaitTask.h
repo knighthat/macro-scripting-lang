@@ -126,13 +126,15 @@
 
 #include "Task.h"
 
+
 class WaitTask : public Task {
 
 public:
-    explicit WaitTask(Token *values) : Task(values) {}
+    explicit WaitTask(string &source);
+
+    static bool validate(string &source);
 
     void execute() override;
 };
-
 
 #endif //MACROSCRIPTINGLANG_WAITTASK_H

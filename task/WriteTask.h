@@ -126,12 +126,17 @@
 
 #include "Task.h"
 
+
 class WriteTask : public Task {
 
 public:
-    explicit WriteTask(Token *values) : Task(values) {}
+    explicit WriteTask(string &source);
 
-    void execute() override;
+    static bool validate(string &source);
+
+    string command() override { return "type"; }
+
+    string args() override;
 };
 
 

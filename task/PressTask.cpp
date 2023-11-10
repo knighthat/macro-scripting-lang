@@ -121,15 +121,25 @@
 // Created by knighthat on 11/7/23.
 //
 
-#include <string>
-#include <iostream>
+
 #include <linux/input-event-codes.h>
 
 #include "PressTask.h"
 
+
 int char_to_keycode(char c) {
-    char upper = (char) std::toupper(c);
-    switch ( upper ) {
+    switch (c) {
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            return c - 42;
+
         case 'A':
             return KEY_A;
         case 'B':
@@ -181,38 +191,49 @@ int char_to_keycode(char c) {
         case 'Z':
             return KEY_Z;
 
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            return c - 47;
-        case '0':
-            return KEY_0;
-
         default:
-            return KEY_SPACE;
+            return KEY_RESERVED;
     }
 }
 
+int string_to_keycode(string &str) {
+    if (str.length() == 1)
+        return char_to_keycode(str[0]);
 
-void PressTask::execute() {
+    return KEY_RESERVED;
+}
 
-    int keycode = char_to_keycode(values[0].value[0]);
-    std::string key = std::to_string(keycode);
+bool PressTask::validate(string &source) {
 
-    std::string command = "ydotool key %p:1 %r:0";
+    string button;
+    for (char c: source) {
+        if (' ' == c)
+            break;
+        button += c;
+    }
 
-    size_t pressPos = command.find("%p");
-    command.replace(pressPos, 2, key);
-    size_t releasePos = command.find("%r");
-    command.replace(releasePos, 2, key);
+    int keycode = string_to_keycode(source);
+    if (keycode == KEY_RESERVED)
+        cout << "Invalid key!" << endl;
 
-    std::cout << command << std::endl;
+    return keycode != KEY_RESERVED;
+}
 
-    system(command.c_str());
+PressTask::PressTask(string &source) {
+    int keycode = string_to_keycode(source);
+    string key = std::to_string(keycode);
+    auto *token = new Token(TokenType::NUMBER, key);
+    tokens.push_back(*token);
+}
+
+string PressTask::args() {
+    string args = "%p:1 %r:0";
+
+    size_t pressPos = args.find("%p");
+    args.replace(pressPos, 2, tokens[0].value);
+
+    size_t releasePos = args.find("%r");
+    args.replace(releasePos, 2, tokens[0].value);
+
+    return args;
 }
