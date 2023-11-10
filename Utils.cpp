@@ -118,31 +118,46 @@
 //
 
 //
-// Created by knighthat on 11/7/23.
+// Created by tnknight on 11/9/23.
 //
 
-#include "Keyword.h"
 
-Keyword valueOf(std::string &keyword) {
-    static const std::map<std::string, Keyword> map =
-            {
-                    { "MOVE", Keyword::MOVE },
-                    { "PRESS", Keyword::PRESS },
-                    { "WRITE", Keyword::WRITE },
-                    { "WAIT", Keyword::WAIT },
-            };
-    auto it = map.find(keyword);
-    return it->second;
+#include "Utils.h"
+
+vector<string> split(string &source, char splitter) {
+    vector<string> result;
+    size_t lastColonPos = 0;
+
+    for (int i = 0; i < source.length(); i++) {
+        size_t start = lastColonPos;
+        size_t stop;
+
+        if (splitter == source[i]) {
+            stop = i;
+            lastColonPos = i + 1;
+        } else if (source.length() - 1 == i)
+            stop = source.length();
+        else
+            continue;
+
+        size_t length = stop - start;
+        string split = source.substr(start, length);
+        result.push_back(split);
+    }
+
+    return result;
 }
 
-std::string toString(Keyword keyword) {
-    static const std::map<Keyword, std::string> map =
-            {
-                    { Keyword::MOVE, "MOVE" },
-                    { Keyword::PRESS, "PRESS" },
-                    { Keyword::WRITE, "WRITE" },
-                    { Keyword::WAIT, "WAIT" },
-            };
-    auto it = map.find(keyword);
-    return it->second;
+string trim(string source) {
+    string newString = std::move(source);
+    int start, end;
+
+    while (start < end && isspace(newString[start]))
+        ++start;
+
+    while (end > start && isspace(newString[end - 1]))
+        --end;
+
+    return newString.substr(start, end - start);
 }
+
