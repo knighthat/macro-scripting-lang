@@ -121,29 +121,48 @@
 // Created by knighthat on 11/7/23.
 //
 
+
 #ifndef MACROSCRIPTINGLANG_TOKEN_H
 #define MACROSCRIPTINGLANG_TOKEN_H
 
+
 #include <string>
+#include <map>
 #include <vector>
 
-#include "TokenType.h"
+using namespace std;
+
+
+enum class Keyword {
+    MOVE,
+    PRESS,
+    WRITE,
+    WAIT
+};
+
+const Keyword *valueOf(string &value);
+
+
+enum class TokenType {
+    STRING,
+    NUMBER,
+};
+
+const TokenType *valueOf(char c);
+
 
 class Token {
 
 public:
-    std::string value;
     TokenType type;
+    string value;
 
-    Token(std::string &value, TokenType type) {
-        this->value = value;
+    explicit Token(TokenType type, string &values) {
         this->type = type;
+        this->value = values;
     }
 
-    [[nodiscard]] std::string toString() const;
+    static vector<Token> parse(string &from);
 };
-
-std::vector<Token> tokenize(std::string &source);
-
 
 #endif //MACROSCRIPTINGLANG_TOKEN_H

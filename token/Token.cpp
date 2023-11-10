@@ -121,93 +121,63 @@
 // Created by knighthat on 11/7/23.
 //
 
-#include <iostream>
 
 #include "Token.h"
-#include "TokenType.h"
 #include "../Validator.h"
 
-typedef bool (*comparator)(char);
 
-int append(std::string &builder, int i, std::string &source, comparator func) {
-    for ( ; i < source.length() ; i++ ) {
-        if ( func(source[i])) {
+const Keyword *valueOf(string &value) {
+    static const map<string, Keyword> map =
+            {
+                    {"MOVE",  Keyword::MOVE},
+                    {"PRESS", Keyword::PRESS},
+                    {"WRITE", Keyword::WRITE},
+                    {"WAIT",  Keyword::WAIT},
+            };
+    auto result = map.find(value);
+    return result != map.end() ? &(result->second) : nullptr;
+}
 
-            std::string str;
-            str += source[i];
+const TokenType *valueOf(char c) {
+    TokenType type = TokenType::STRING;
+    if (c >= '0' && c <= '9')
+        type = TokenType::NUMBER;
 
-            builder.append(str);
+    return new TokenType(type);
+}
 
-        } else {
-            i--;
-            break;
+vector<Token> Token::parse(string &from) {
+    vector<Token> tokens;
+
+    for (int i = 0; i < from.length(); i++) {
+        char c = from[i];
+
+        if (isNumeric(c)) {
+
+            string numBuilder;
+            while (isNumeric(c)) {
+                numBuilder += c;
+                i++;
+                c = from[i];
+            }
+
+            auto token = new Token(TokenType::NUMBER, numBuilder);
+            tokens.push_back(*token);
+
+        } else if (isChar(c)) {
+
+            string strBuilder;
+            while (isChar(c)) {
+                strBuilder += c;
+                i++;
+                c = from[i];
+            }
+
+            auto token = new Token(TokenType::STRING, strBuilder);
+            tokens.push_back(*token);
+
         }
     }
-    return i;
-}
 
-int loadValue(std::string &builder, int i, std::string &source, TokenType type) {
-    switch ( type ) {
-
-        case TokenType::STRING:
-        case TokenType::NUMBER:
-            comparator comp;
-            if ( type == TokenType::STRING )
-                comp = isChar;
-            else
-                comp = isNumeric;
-            i = append(builder, i, source, comp);
-            break;
-
-        case TokenType::DOUBLE_QUOTE:
-            i = append(builder, i + 1, source, [](char c) -> bool { return c != '"'; });
-            i++;
-            break;
-
-        default:
-            std::string str;
-            str += source[i];
-            builder.append(str);
-            break;
-    }
-
-
-    return i;
-}
-
-std::string Token::toString() const {
-    std::string result = "Token[type=%t, value=%v]";
-
-    size_t typePos = result.find("%t");
-    result.replace(typePos, 2, ::toString(type));
-
-    size_t valuePos = result.find("%v");
-    result.replace(valuePos, 2, value);
-
-    return result;
-}
-
-std::vector<Token> tokenize(std::string &source) {
-
-    std::vector<Token> tokens;
-
-    std::cout << source << std::endl;
-
-    for ( int i = 0 ; i < source.length() ; i++ ) {
-
-        char c = source[i];
-        if ( c == ' ' ) continue;
-
-        std::string builder;
-        TokenType type = valueOf(c);
-
-        i = loadValue(builder, i, source, type);
-
-        if ( type == TokenType::DOUBLE_QUOTE )
-            type = TokenType::STRING;
-
-        auto token = new Token(builder, type);
-        tokens.push_back(*token);
-    }
     return tokens;
 }
