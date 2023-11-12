@@ -15,6 +15,6 @@ using namespace std;
 
 vector<string> split(string &source, char splitter);
 
-string trim(string source);
+string trim(string &source);
 
 #endif //MACROSCRIPTINGLANG_UTILS_H

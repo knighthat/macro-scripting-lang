@@ -122,7 +122,11 @@
 //
 
 
+#include <iostream>
+#include <cstring>
+
 #include "Utils.h"
+
 
 vector<string> split(string &source, char splitter) {
     vector<string> result;
@@ -148,16 +152,14 @@ vector<string> split(string &source, char splitter) {
     return result;
 }
 
-string trim(string source) {
-    string newString = std::move(source);
-    int start, end;
+string trim(string &source) {
+    size_t start = 0, end = source.length();
 
-    while (start < end && isspace(newString[start]))
-        ++start;
+    while (start < end && isspace(source[start]))
+        start++;
 
-    while (end > start && isspace(newString[end - 1]))
-        --end;
+    while (end > start && isspace(source[end]))
+        end--;
 
-    return newString.substr(start, end - start);
+    return source.substr(start, end - start);
 }
-
