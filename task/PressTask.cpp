@@ -138,7 +138,7 @@ int char_to_keycode(char c) {
         case '7':
         case '8':
         case '9':
-            return c - 42;
+            return c - 47;
 
         case 'A':
             return KEY_A;
