@@ -118,82 +118,45 @@
 //
 
 //
-// Created by knighthat on 11/8/23.
+// Created by knighthat on 11/10/23.
 //
 
+
+#include <map>
 #include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
+#include <sstream>
 
-#include "Utils.h"
-#include "token/Token.h"
-#include "task/MoveMouseTask.h"
-#include "task/PressTask.h"
-#include "task/WaitTask.h"
-#include "task/WriteTask.h"
-#include "task/MouseClickTask.h"
-
-using namespace std;
+#include "MouseClickTask.h"
 
 
-int main(int argc, char **argv) {
-    if (argc < 2) {
-        cout << "Missing file to read" << endl;
-        return 1;
-    }
+int get_button(string& value) {
+    const map<string, int> map =
+            {
+                    {"LEFT", 0x00},
+                    {"RIGHT", 0x01},
+                    {"MIDDLE", 0x02},
+                    {"FORWARD", 0x05},
+                    {"BACK", 0x06}
+            };
+    auto it = map.find(value);
+    return it == map.end() ? -1 : it->second;
+}
 
-    ifstream file(argv[1]);
-    if (!file.is_open()) {
-        cout << "Failed to open file " << argv[1] << endl;
-        return 1;
-    }
+bool MouseClickTask::validate(string &source) {
+    return get_button(source) > -1;
+}
 
-    string line;
-    while (getline(file, line)) {
-        cout << "Tokenizing: " << line << endl;
+MouseClickTask::MouseClickTask(string &source) {
+    string value = to_string(get_button(source));
+    auto* token = new Token(TokenType::NUMBER, value);
+    tokens.push_back(*token);
+}
 
-        vector<string> parts = split(line, ':');
-        if (parts.size() < 2) {
-            cout << "No colon(:) found! Skipping..." << endl;
-            continue;
-        }
+string MouseClickTask::args() {
+    /* 0xC0 is the combination of 0x40(down) and 0x80(up) */
+    int value = stoi(tokens[0].value) + 0xC0;
 
-        const Keyword *keyword = valueOf(parts[0]);
-        if (keyword == nullptr) {
-            cout << "Unknown keyword: " << parts[0] << endl;
-            return 1;
-        }
-
-        string data = trim(parts[1]);
-        Task *task = nullptr;
-        switch (*keyword) {
-
-            case Keyword::MOVE:
-                if (MoveMouseTask::validate(data))
-                    task = new MoveMouseTask(data);
-                break;
-            case Keyword::PRESS:
-                if (PressTask::validate(data))
-                    task = new PressTask(data);
-                break;
-            case Keyword::WRITE:
-                if (WriteTask::validate(data))
-                    task = new WriteTask(data);
-                break;
-            case Keyword::WAIT:
-                if (WaitTask::validate(data))
-                    task = new WaitTask(data);
-                break;
-            case Keyword::CLICK:
-                if (MouseClickTask::validate(data))
-                    task = new MouseClickTask(data);
-                break;
-        }
-
-        if (task == nullptr)
-            return 1;
-        else
-            task->execute();
-    }
+    stringstream hexStr;
+    hexStr << "0x" << hex << value;
+    return hexStr.str();
 }

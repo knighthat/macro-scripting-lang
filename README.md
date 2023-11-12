@@ -4,6 +4,11 @@ Main feature, simulate user's inputs such as keyboard input, mouse movement, wri
 </p>
 
 
+# Features
+
+Converts a file that contains valid [Syntax](#syntax) and executes in order.
+
+
 # Syntax
 
 ## WAIT
@@ -27,7 +32,7 @@ Example: `PRESS: A` results in 'a' pressed
 * Uppercase `A` will be treated as lowercase `a`. 
 * Unsupported keys will return error.
 
-# MOVE
+## MOVE
 > **Teleports** your cursor to provided position of _X_ and _Y_.
 
 ```yaml
@@ -38,7 +43,7 @@ Example: `MOVE: 100, 200` will **teleport** your cursor to position 100, 200 on 
 **Attention**:
 * If value exceeds screen's resolution. Mouse will get moved to your screen's resolution (bottom-right corner).
 
-# WRITE
+## WRITE
 > Type provided string to currently focus window.
 
 ```yaml
@@ -48,6 +53,23 @@ Example: `WRITE: Hello, World!` simulates user typing "**_Hello, World!_**" to c
 
 **Attention**:
 * `\n` or `\t` will be treated as escape sequence character. Currently, there's no way to print these out.
+
+## CLICK
+> Simulates a click from mouse.
+
+```yaml
+   CLICK: button
+```
+
+```
+   Supported buttons:
+   - LEFT    - Left click
+   - RIGHT   - Right click
+   - MIDDLE  - Middle click
+   - FORWARD - Forward btuton
+   - BACK    - Back button
+```
+Example: `CLICK: LEFT` will trigger left click from mouse once.
 
 
 # Installation

@@ -23,4 +23,6 @@ add_executable(
         task/Task.cpp
         task/Task.h
         Utils.cpp
+        task/MouseClickTask.cpp
+        task/MouseClickTask.h
 )

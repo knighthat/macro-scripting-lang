@@ -133,6 +133,7 @@ const Keyword *valueOf(string &value) {
                     {"PRESS", Keyword::PRESS},
                     {"WRITE", Keyword::WRITE},
                     {"WAIT",  Keyword::WAIT},
+                    {"CLICK", Keyword::CLICK}
             };
     auto result = map.find(value);
     return result != map.end() ? &(result->second) : nullptr;

@@ -135,6 +135,7 @@ using namespace std;
 
 enum class Keyword {
     MOVE,
+    CLICK,
     PRESS,
     WRITE,
     WAIT
