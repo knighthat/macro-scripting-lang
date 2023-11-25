@@ -48,7 +48,7 @@ public:
               run0();
           }
       }
-  }
+    }
 };
 
 void print_help(char *file_name) {
@@ -63,16 +63,13 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    Script script;
-
-    if (argc == 4 || string(argv[2]) != "--loop") {
-
-        script.repeat = stoi(argv[3]);
-
-    } else {
+    if (argc == 3 && string(argv[2]) != "--loop") {
         print_help(argv[0]);
         return 1;
     }
+
+    Script script;
+    script.repeat = stoi(argv[3]);
 
     ifstream file(argv[1]);
     if (!file.is_open()) {
