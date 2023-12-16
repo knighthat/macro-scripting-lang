@@ -9,6 +9,7 @@
 
 
 #include <linux/input-event-codes.h>
+#include <map>
 
 #include "PressTask.h"
 
@@ -82,11 +83,30 @@ int char_to_keycode(char c) {
     }
 }
 
-int string_to_keycode(string &str) {
-    if (str.length() == 1)
-        return char_to_keycode(str[0]);
+int get_func_key(string &str) {
+    const map<string, int> keycodes =
+        {
+                {"ENTER", KEY_ENTER},
+                {"F1", KEY_F1},
+                {"F2", KEY_F2},
+                {"F3", KEY_F3},
+                {"F4", KEY_F4},
+                {"F5", KEY_F5},
+                {"F6", KEY_F6},
+                {"F7", KEY_F7},
+                {"F8", KEY_F8},
+                {"F9", KEY_F9},
+                {"F10", KEY_F10},
+                {"F11", KEY_F11},
+                {"F12", KEY_F12}
+        };
 
-    return KEY_RESERVED;
+    auto result = keycodes.find(str);
+    return result != keycodes.end() ? result->second : KEY_RESERVED;
+}
+
+int string_to_keycode(string &str) {
+    return str.length() == 1 ? char_to_keycode(str[0]) : get_func_key(str);
 }
 
 bool PressTask::validate(string &source) {
