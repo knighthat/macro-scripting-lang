@@ -25,6 +25,14 @@
 using namespace std;
 
 
+class Argument {
+
+public:
+    string file;
+    int loop = 1;
+    long start_delay = 0;
+};
+
 class Script {
 
 private:
@@ -34,17 +42,17 @@ private:
     }
 
 public:
-    int repeat = 1;
+    Argument argument;
     vector<unique_ptr<Task>> tasks;
 
     [[noreturn]] void run() {
-      if (repeat == 0) {
+      if (argument.loop == 0) {
           while (true) {
               run0();
           }
       }
-      else if (repeat > 0){
-          for (int i = 0 ; i < repeat ; i++){
+      else if (argument.loop > 0){
+          for (int i = 0 ; i < argument.loop ; i++){
               run0();
           }
       }
@@ -57,19 +65,52 @@ void print_help(char *file_name) {
 }
 
 int main(int argc, char **argv) {
+
     if (argc < 2) {
         cout << "Missing file to read" << endl;
         print_help(argv[0]);
         return 1;
     }
 
-    if (argc == 3 && string(argv[2]) != "--loop") {
-        print_help(argv[0]);
-        return 1;
+    Script script;
+
+    int option;
+    while ((option = getopt(argc, argv, "l:d:")) != -1) {
+
+        try {
+            switch ( option ) {
+                case 'l':
+                    cout << "Number of loop(1): " << optarg << endl;
+                    script.argument.loop = stoi(optarg);
+                    break;
+                case 'd':
+                    cout << "Delay " << optarg << " millis before running" << endl;
+                    script.argument.start_delay = stol(optarg);
+                    break;
+                default:
+                    break;
+            }
+        } catch (const invalid_argument& e) {
+            continue;
+        }
     }
 
-    Script script;
-    script.repeat = stoi(argv[3]);
+    for ( int i = 1 ; i < argc ; i++ ) {
+
+        string arg = argv[i];
+
+        if (arg.rfind('-', 0) == 0) {
+            i++;
+            continue;
+        }
+
+        script.argument.file = arg;
+        break;
+    }
+
+    cout << "File: " << script.argument.file << endl;
+    cout << "Loop: " << script.argument.loop << endl;
+    cout << "Delay: "<< script.argument.start_delay << endl;
 
     ifstream file(argv[1]);
     if (!file.is_open()) {
